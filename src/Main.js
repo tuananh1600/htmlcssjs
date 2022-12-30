@@ -69,18 +69,25 @@ const Main = (props) => {
   };
 
   // Xử Lý Mail
+  var regex = /\d+/    //Number in string
   const handleValidateEmail = (value) => {
+    let check = 0
     let formatValue = loc_xoa_dau(value.toLowerCase()).split(" ");
+    let countNumberMail = 0;
+    let listItemAllPageTemp =[...listItemAllPage]
     let userMail =
       formatValue.length === 1 ? `${formatValue[0]}` : `${formatValue[formatValue.length - 1]}.${formatValue[0]}`;
-    let countNumberMail = 0;
-    listItemAllPage.forEach((item, index) => {
-      item.forEach((item1, index1) => {
-        if (item1.email !== false && item1.email.includes(userMail)) {
-          countNumberMail++;
-        }
-      });
-    });
+      listItemAllPageTemp.forEach((item)=>{
+        item.forEach((item1)=>{
+          if(Number(item1.email.toString().match(regex)) > 0 && item1.email.toString() === `${userMail}${item1.email.toString().match(regex)}${mailDomain}`){
+            check ++
+            countNumberMail = check + Number(item1.email.toString().match(regex))
+          }else if(item1.email.toString() === `${userMail}${mailDomain}`){
+            countNumberMail++
+          }
+        })
+      })
+    
     if (countNumberMail === 0) {
       return userMail + mailDomain;
     }
@@ -96,27 +103,29 @@ const Main = (props) => {
 
   //Add Member
   const handleAddMember = () => {
-    const listItemTemp = [...listItem];
-    let countName = 0;
-    listItemTemp.forEach((item) => {
-      if (item.name.toUpperCase().includes(valueInputNameAdd.toUpperCase())) {
-        countName++;
-      }
-    });
+    let listItemAllPageTemp =[]
+    listItemAllPage.forEach((item)=>{
+      listItemAllPageTemp = listItemAllPageTemp.concat(item)
+    })
     if (
       valueInputEmailAdd !== "" &&
       valueInputNameAdd !== "" &&
       valueInputJobAdd !== ""
     ) {
-      listItemTemp.unshift({
+      listItem.unshift({
         id: uuidv4(),
-        name:
-          countName === 0 ? valueInputNameAdd : `${valueInputNameAdd} ${countName}`,
-          job: valueInputJobAdd,
+        name:valueInputNameAdd,
+        job: valueInputJobAdd,
+        email: valueInputEmailAdd,
+      })
+      listItemAllPageTemp.unshift({
+        id: uuidv4(),
+        name:valueInputNameAdd,
+        job: valueInputJobAdd,
          email: valueInputEmailAdd,
       });
-      setListItem(listItemTemp);
-      setlistItemAllPage(sliceListItem(listItemTemp));
+      // setListItem(listItemAllPageTemp);
+      setlistItemAllPage(sliceListItem(listItemAllPageTemp));
       setValueInputEmailAdd("");
       setValueInputJobAdd("");
       setValueInputNameAdd("");
@@ -273,7 +282,7 @@ const Main = (props) => {
                 <div className="content-employee__item" key={item.id}>
                   <div className="employ-item">
                     <div className="employee-img">
-                      <h1 style={{fontSize : "35px"}}>{item.name.split(' ')[item.name.split(' ').length-1].toUpperCase().split('')[0]}</h1>
+                      <h1 style={{fontSize : "25px"}}>{item.name.split(' ')[item.name.split(' ').length-1].toUpperCase().split('')[0]}</h1>
                       <p className="employee-img__connect">
                         <i className="fas fa-comments"></i>15
                         <i className="fas fa-users"></i>23
