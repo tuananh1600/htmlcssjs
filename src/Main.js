@@ -107,10 +107,17 @@ const Main = (props) => {
     listItemAllPage.forEach((item)=>{
       listItemAllPageTemp = listItemAllPageTemp.concat(item)
     })
+    let check = 0
+    listItemAllPageTemp.forEach((item)=>{
+      if(item.name.toUpperCase().includes(valueInputNameAdd.toUpperCase())){
+        check++
+      }
+    })
     if (
       valueInputEmailAdd !== "" &&
       valueInputNameAdd !== "" &&
-      valueInputJobAdd !== ""
+      valueInputJobAdd !== "" &&
+      check >0
     ) {
       listItem.unshift({
         id: uuidv4(),
@@ -124,11 +131,26 @@ const Main = (props) => {
         job: valueInputJobAdd,
          email: valueInputEmailAdd,
       });
-      // setListItem(listItemAllPageTemp);
       setlistItemAllPage(sliceListItem(listItemAllPageTemp));
       setValueInputEmailAdd("");
       setValueInputJobAdd("");
       setValueInputNameAdd("");
+    }else if(
+    valueInputEmailAdd !== "" &&
+    valueInputNameAdd !== "" &&
+    valueInputJobAdd !== "" &&
+    check ===0){
+      listItem.unshift({
+        id: uuidv4(),
+        name:valueInputNameAdd,
+        job: valueInputJobAdd,
+        email: valueInputEmailAdd,
+      })
+      setlistItemAllPage(sliceListItem(listItem))
+      setValueInputEmailAdd("");
+      setValueInputJobAdd("");
+      setValueInputNameAdd("");
+      setValueInputSearch('')
     }
   };
 
@@ -143,10 +165,7 @@ const Main = (props) => {
     const listItemAfterSearch = [];
     listItem.forEach((item) => {
       if (
-        item[searchType]
-          .toString()
-          .toUpperCase()
-          .includes(value.toUpperCase())
+        item[searchType].toString().toUpperCase().trim().includes(value.toUpperCase())
       ) {
         listItemAfterSearch.push(item);
       }
@@ -162,25 +181,25 @@ const Main = (props) => {
 
   //Filer Sort
   const handleSortName = (e) => {
-    let listItemTemp = [];
+    let listItemAllPageTemp = [];
     listItemAllPage.forEach((item) => {
-      listItemTemp = listItemTemp.concat(item);
+      listItemAllPageTemp = listItemAllPageTemp.concat(item);
     });
-    listItemTemp.sort((a, b) => {
+    listItemAllPageTemp.sort((a, b) => {
       if (
-        loc_xoa_dau(a.name.trim().split(" ")[a.name.trim().split(" ").length - 1].toLowerCase()) <
-        loc_xoa_dau(b.name.trim().split(" ")[b.name.trim().split(" ").length - 1].toLowerCase())
+        a.email.toString().trim().split(".")[0] <
+        b.email.toString().trim().split(".")[0]
       ) {
         return e.target.value === "increase" && -1;
       } else if (
-        loc_xoa_dau(a.name.trim().split(" ")[a.name.trim().split(" ").length - 1].toLowerCase()) >
-        loc_xoa_dau(b.name.trim().split(" ")[b.name.trim().split(" ").length - 1].toLowerCase())
+        a.email.toString().trim().split(".")[0] >
+        b.email.toString().trim().split(".")[0]
       ) {
         return e.target.value === "decrease" && -1;
       }
     });
-    setlistItemAllPage(sliceListItem(listItemTemp));
-  };
+    setlistItemAllPage(sliceListItem(listItemAllPageTemp));
+  }
   return (
     <div className="main">
       <div className="main__control">
@@ -232,6 +251,7 @@ const Main = (props) => {
               type="text"
               placeholder="Search..."
               onChange={handleSearchMember}
+              value = {valueInputSearch}
             ></input>
             <select onChange={handleValueSelectSearch}>
               <option value={"name"}>Search for Name</option>
@@ -245,7 +265,7 @@ const Main = (props) => {
           <div className="control-select">
             <div className="control-select__filter">
               <select onChange={handleSortName}>
-                <option value={"default"}>Filter</option>
+                <option style={{display :"none"}}>Filter</option>
                 <option value={"increase"}>Tên A - Z</option>
                 <option value={"decrease"}>Tên Z - A</option>
               </select>
