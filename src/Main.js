@@ -135,6 +135,7 @@ const Main = (props) => {
       setValueInputEmailAdd("");
       setValueInputJobAdd("");
       setValueInputNameAdd("");
+      setIndexPage(0)
     }else if(
     valueInputEmailAdd !== "" &&
     valueInputNameAdd !== "" &&
@@ -151,6 +152,7 @@ const Main = (props) => {
       setValueInputJobAdd("");
       setValueInputNameAdd("");
       setValueInputSearch('')
+      setIndexPage(0)
     }
   };
 
@@ -302,7 +304,7 @@ const Main = (props) => {
                 <div className="content-employee__item" key={item.id}>
                   <div className="employ-item">
                     <div className="employee-img">
-                      <h1 style={{fontSize : "25px"}}>{item.name.split(' ')[item.name.split(' ').length-1].toUpperCase().split('')[0]}</h1>
+                      <h1 style={{fontSize : "25px"}}>{item.email!==false ? item.email.toString().split('')[0].toUpperCase() : item.name.split(' ')[item.name.split(' ').length-1].split('')[0].toUpperCase()}</h1>
                       <p className="employee-img__connect">
                         <i className="fas fa-comments"></i>15
                         <i className="fas fa-users"></i>23
