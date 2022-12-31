@@ -71,7 +71,7 @@ const Main = (props) => {
   // Xử Lý Mail
   var regex = /\d+/    //Number in string
   const handleValidateEmail = (value) => {
-    let check = 0
+    let check = []
     let formatValue = loc_xoa_dau(value.toLowerCase()).split(" ");
     let countNumberMail = 0;
     let listItemAllPageTemp =[...listItemAllPage]
@@ -80,8 +80,8 @@ const Main = (props) => {
       listItemAllPageTemp.forEach((item)=>{
         item.forEach((item1)=>{
           if(Number(item1.email.toString().match(regex)) > 0 && item1.email.toString() === `${userMail}${item1.email.toString().match(regex)}${mailDomain}`){
-            check ++
-            countNumberMail = check + Number(item1.email.toString().match(regex))
+            check.push(Number(item1.email.toString().match(regex)))
+            countNumberMail = Math.max.apply(null, check) +1
           }else if(item1.email.toString() === `${userMail}${mailDomain}`){
             countNumberMail++
           }
