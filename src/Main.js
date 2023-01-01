@@ -79,15 +79,14 @@ const Main = (props) => {
       formatValue.length === 1 ? `${formatValue[0]}` : `${formatValue[formatValue.length - 1]}.${formatValue[0]}`;
       listItemAllPageTemp.forEach((item)=>{
         item.forEach((item1)=>{
-          if(Number(item1.email.toString().match(regex)) > 0 && item1.email.toString() === `${userMail}${item1.email.toString().match(regex)}${mailDomain}`){
+          if(item1.email.toString() === `${userMail}${mailDomain}`){
+            countNumberMail++
+          }else if(Number(item1.email.toString().match(regex)) > 0 && item1.email.toString() === `${userMail}${item1.email.toString().match(regex)}${mailDomain}`){
             check.push(Number(item1.email.toString().match(regex)))
             countNumberMail = Math.max.apply(null, check) +1
-          }else if(item1.email.toString() === `${userMail}${mailDomain}`){
-            countNumberMail++
           }
         })
       })
-    
     if (countNumberMail === 0) {
       return userMail + mailDomain;
     }
@@ -103,21 +102,10 @@ const Main = (props) => {
 
   //Add Member
   const handleAddMember = () => {
-    let listItemAllPageTemp =[]
-    listItemAllPage.forEach((item)=>{
-      listItemAllPageTemp = listItemAllPageTemp.concat(item)
-    })
-    let check = 0
-    listItemAllPageTemp.forEach((item)=>{
-      if(item.name.toUpperCase().includes(valueInputNameAdd.toUpperCase())){
-        check++
-      }
-    })
     if (
       valueInputEmailAdd !== "" &&
       valueInputNameAdd !== "" &&
-      valueInputJobAdd !== "" &&
-      check >0
+      valueInputJobAdd !== "" 
     ) {
       listItem.unshift({
         id: uuidv4(),
@@ -125,36 +113,13 @@ const Main = (props) => {
         job: valueInputJobAdd,
         email: valueInputEmailAdd,
       })
-      listItemAllPageTemp.unshift({
-        id: uuidv4(),
-        name:valueInputNameAdd,
-        job: valueInputJobAdd,
-         email: valueInputEmailAdd,
-      });
-      setlistItemAllPage(sliceListItem(listItemAllPageTemp));
+      setlistItemAllPage(sliceListItem(listItem));
       setValueInputEmailAdd("");
       setValueInputJobAdd("");
       setValueInputNameAdd("");
-      setIndexPage(0)
-    }else if(
-    valueInputEmailAdd !== "" &&
-    valueInputNameAdd !== "" &&
-    valueInputJobAdd !== "" &&
-    check ===0){
-      listItem.unshift({
-        id: uuidv4(),
-        name:valueInputNameAdd,
-        job: valueInputJobAdd,
-        email: valueInputEmailAdd,
-      })
-      setlistItemAllPage(sliceListItem(listItem))
-      setValueInputEmailAdd("");
-      setValueInputJobAdd("");
-      setValueInputNameAdd("");
+      setIndexPage(0);
       setValueInputSearch('')
-      setIndexPage(0)
-    }
-  };
+    }}
 
   // Search Member
   const [valueInputSearch,setValueInputSearch]=useState('')
