@@ -74,18 +74,14 @@ const Main = (props) => {
     let check = []
     let formatValue = loc_xoa_dau(value.toLowerCase()).split(" ");
     let countNumberMail = 0;
-    let listItemAllPageTemp =[...listItemAllPage]
-    let userMail =
-      formatValue.length === 1 ? `${formatValue[0]}` : `${formatValue[formatValue.length - 1]}.${formatValue[0]}`;
-      listItemAllPageTemp.forEach((item)=>{
-        item.forEach((item1)=>{
-          if(item1.email.toString() === `${userMail}${mailDomain}`){
-            countNumberMail++
-          }else if(Number(item1.email.toString().match(regex)) > 0 && item1.email.toString() === `${userMail}${item1.email.toString().match(regex)}${mailDomain}`){
-            check.push(Number(item1.email.toString().match(regex)))
-            countNumberMail = Math.max.apply(null, check) +1
-          }
-        })
+    let userMail = formatValue.length === 1 ? `${formatValue[0]}` : `${formatValue[formatValue.length - 1]}.${formatValue[0]}`;
+      listItem.forEach((item)=>{
+        if(Number(item.email.toString().match(regex)) > 0 && item.email.toString() === `${userMail}${item.email.toString().match(regex)}${mailDomain}`){
+          check.push(Number(item.email.toString().match(regex)))
+          countNumberMail = Math.max.apply(null, check)+1
+        }else if(item.email.toString() === `${userMail}${mailDomain}` && countNumberMail == 0){
+          countNumberMail++
+        }
       })
     if (countNumberMail === 0) {
       return userMail + mailDomain;
