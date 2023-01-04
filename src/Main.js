@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { sliceListItem, loc_xoa_dau } from "./function";
+import { sliceListItem, loc_xoa_dau,totalResult } from "./function";
 import debounce from "lodash.debounce";
 const Main = (props) => {
   const [listItem, setListItem] = useState(props.data);
@@ -10,6 +10,7 @@ const Main = (props) => {
   const [valueInputJobAdd, setValueInputJobAdd] = useState("");
   const [valueInputEmailAdd, setValueInputEmailAdd] = useState("");
   const [indexPage, setIndexPage] = useState(0);
+
   const changeValueInputNameAdd = (e) => {
     setValueInputNameAdd(e.target.value);
   };
@@ -26,6 +27,8 @@ const Main = (props) => {
       setIndexPage(indexPage - 1);
     }
   };
+
+
 
   // Xử Lý Mail
   var regex = /\d+/    //Number in string
@@ -124,6 +127,7 @@ const Main = (props) => {
     });
     setlistItemAllPage(sliceListItem(listItemAllPageTemp,40));
   }
+  
   return (
     <div className="main">
       <div className="main__control">
@@ -194,15 +198,22 @@ const Main = (props) => {
                 <option value={"decrease"}>Tên Z - A</option>
               </select>
             </div>
+            <h3>{`Tổng kết quả : ${totalResult(listItemAllPage)}`}</h3>
             <div className="control-select__pages">
               <div className="page-number">
                 <span className="page-number__value">{`Page ${indexPage +
-                  1}`}</span>
+                  1}/${listItemAllPage.length}`}</span>
                 <span className="btn-control">
-                  <button onClick={handleBackPage}>
+                  <button
+                  onClick={handleBackPage} 
+                  disabled ={indexPage === 0 ? 'false' : '' }
+                   >
                     <i className="fas fa-angle-left"></i>
                   </button>
-                  <button onClick={handleNextPage}>
+                  <button 
+                  onClick={handleNextPage}
+                  disabled={indexPage + 1 == listItemAllPage.length ? 'false' : ''}
+                  >
                     <i className="fas fa-angle-right"></i>
                   </button>
                 </span>
