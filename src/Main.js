@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { sliceListItem, loc_xoa_dau } from "./function";
+import debounce from "lodash.debounce";
 const Main = (props) => {
   const [listItem, setListItem] = useState(props.data);
   const mailDomain = "@ntq-solution.com.vn";
@@ -84,9 +85,10 @@ const Main = (props) => {
   };
   const searhMember = (value,searchType) => {
     const listItemAfterSearch = [];
+    const newValue = loc_xoa_dau(value)
     listItem.forEach((item) => {
       if (
-        item[searchType].toString().toUpperCase().trim().includes(value.toUpperCase())
+        loc_xoa_dau(item[searchType].toString().toUpperCase().trim()).includes(newValue.toUpperCase())
       ) {
         listItemAfterSearch.push(item);
       }
@@ -99,6 +101,7 @@ const Main = (props) => {
     searhMember(e.target.value.trim(),valueSelectSearch);
     setValueInputSearch(e.target.value)
   };
+  const debounceOnChange = debounce(handleSearchMember,300)
 
   //Filer Sort
   const handleSortName = (e) => {
@@ -171,8 +174,8 @@ const Main = (props) => {
             <input
               type="text"
               placeholder="Search..."
-              onChange={handleSearchMember}
-              value = {valueInputSearch}
+              onChange={debounceOnChange}
+              // value = {valueInputSearch}
             ></input>
             <select onChange={handleValueSelectSearch}>
               <option value={"name"}>Search for Name</option>
