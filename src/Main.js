@@ -1,26 +1,10 @@
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { sliceListItem, loc_xoa_dau } from "./function";
 const Main = (props) => {
   const [listItem, setListItem] = useState(props.data);
-  const pageSize = 40;
   const mailDomain = "@ntq-solution.com.vn";
-  const sliceListItem = (arr) => {
-    const totalPage = Math.floor(arr.length / pageSize);
-    const itemLast = arr.length - totalPage * pageSize;
-    const listItemNew = [];
-    for (let i = 0; i < totalPage; i++) {
-      listItemNew.push(arr.slice(i * pageSize, (i + 1) * pageSize));
-    }
-    if (itemLast != 0) {
-      listItemNew.push(
-        arr.slice(totalPage * pageSize, totalPage * pageSize + itemLast)
-      );
-    }
-    return listItemNew;
-  };
-  const [listItemAllPage, setlistItemAllPage] = useState(
-    sliceListItem(listItem)
-  );
+  const [listItemAllPage, setlistItemAllPage] = useState(sliceListItem(listItem,40));
   const [valueInputNameAdd, setValueInputNameAdd] = useState("");
   const [valueInputJobAdd, setValueInputJobAdd] = useState("");
   const [valueInputEmailAdd, setValueInputEmailAdd] = useState("");
@@ -31,41 +15,15 @@ const Main = (props) => {
   const changeValueInputJobAdd = (e) => {
     setValueInputJobAdd(e.target.value);
   };
-
   const handleNextPage = () => {
     if (indexPage < listItemAllPage.length - 1) {
       setIndexPage(indexPage + 1);
     }
   };
-
   const handleBackPage = () => {
     if (indexPage > 0 && indexPage <= listItemAllPage.length - 1) {
       setIndexPage(indexPage - 1);
     }
-  };
-
-  const loc_xoa_dau = (str) => {
-    // Gộp nhiều dấu space thành 1 space
-    str = str.replace(/\s+/g, " ");
-    // loại bỏ toàn bộ dấu space (nếu có) ở 2 đầu của chuỗi
-    str = str.trim();
-    // bắt đầu xóa dấu tiếng việt  trong chuỗi
-    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
-    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
-    str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
-    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
-    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
-    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
-    str = str.replace(/đ/g, "d");
-    str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
-    str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
-    str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
-    str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
-    str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
-    str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
-    str = str.replace(/Đ/g, "D");
-
-    return str;
   };
 
   // Xử Lý Mail
@@ -105,11 +63,11 @@ const Main = (props) => {
     ) {
       listItem.unshift({
         id: uuidv4(),
-        name:valueInputNameAdd,
-        job: valueInputJobAdd,
-        email: valueInputEmailAdd,
+        name:valueInputNameAdd.trim(),
+        job: valueInputJobAdd.trim(),
+        email: valueInputEmailAdd.trim(),
       })
-      setlistItemAllPage(sliceListItem(listItem));
+      setlistItemAllPage(sliceListItem(listItem,40));
       setValueInputEmailAdd("");
       setValueInputJobAdd("");
       setValueInputNameAdd("");
@@ -134,11 +92,11 @@ const Main = (props) => {
       }
     });
     setIndexPage(0);
-    setlistItemAllPage(sliceListItem(listItemAfterSearch));
+    setlistItemAllPage(sliceListItem(listItemAfterSearch,40));
   };
 
   const handleSearchMember = (e) => {
-    searhMember(e.target.value,valueSelectSearch);
+    searhMember(e.target.value.trim(),valueSelectSearch);
     setValueInputSearch(e.target.value)
   };
 
@@ -161,7 +119,7 @@ const Main = (props) => {
         return e.target.value === "decrease" && -1;
       }
     });
-    setlistItemAllPage(sliceListItem(listItemAllPageTemp));
+    setlistItemAllPage(sliceListItem(listItemAllPageTemp,40));
   }
   return (
     <div className="main">
