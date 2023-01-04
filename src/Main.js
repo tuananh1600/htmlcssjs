@@ -41,7 +41,7 @@ const Main = (props) => {
         if(Number(item.email.toString().match(regex)) > 0 && item.email.toString() === `${userMail}${item.email.toString().match(regex)}${mailDomain}`){
           check.push(Number(item.email.toString().match(regex)))
           countNumberMail = Math.max.apply(null, check)+1
-        }else if(item.email.toString() === `${userMail}${mailDomain}` && countNumberMail == 0){
+        }else if(item.email.toString() === `${userMail}${mailDomain}` && countNumberMail === 0){
           countNumberMail++
         }
       })
@@ -107,23 +107,17 @@ const Main = (props) => {
   const debounceOnChange = debounce(handleSearchMember,300)
 
   //Filer Sort
-  const handleSortName = (e) => {
+  const handleSortName = (event) => {
     let listItemAllPageTemp = [];
     listItemAllPage.forEach((item) => {
       listItemAllPageTemp = listItemAllPageTemp.concat(item);
     });
     listItemAllPageTemp.sort((a, b) => {
-      if (
-        a.email.toString().trim().split(".")[0] <
-        b.email.toString().trim().split(".")[0]
-      ) {
-        return e.target.value === "increase" && -1;
-      } else if (
-        a.email.toString().trim().split(".")[0] >
-        b.email.toString().trim().split(".")[0]
-      ) {
-        return e.target.value === "decrease" && -1;
-      }
+      let c = a.name.trim().split(" ");
+      let d = b.name.trim().split(" ");
+      let e = !Number(c[c.length - 1]) ? c[c.length - 1] : c[c.length - 2];
+      let f = !Number(d[d.length - 1]) ? d[d.length - 1] : d[d.length - 2];
+      return event.target.value === "increase" ? e.localeCompare(f) : f.localeCompare(e)
     });
     setlistItemAllPage(sliceListItem(listItemAllPageTemp,40));
   }
@@ -212,7 +206,7 @@ const Main = (props) => {
                   </button>
                   <button 
                   onClick={handleNextPage}
-                  disabled={indexPage + 1 == listItemAllPage.length ? 'false' : ''}
+                  disabled={indexPage + 1 === listItemAllPage.length ? 'false' : ''}
                   >
                     <i className="fas fa-angle-right"></i>
                   </button>
