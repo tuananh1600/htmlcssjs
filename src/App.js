@@ -703,7 +703,7 @@ const App = () => {
     {
         "id": 5785,
         "name": "Edward Li",
-        "email": "edward.li@ntq-solution.com.vn",
+        "email": "li.edward@ntq-solution.com.vn",
         "job": "Solution architect"
     },
     {
