@@ -51,8 +51,8 @@ const Main = (props) => {
     return userMail + countNumberMail + mailDomain;
   };
   const handleOnBlurNameAdd = () => {
-    if (valueInputNameAdd) {
-      setValueInputEmailAdd(handleValidateEmail(valueInputNameAdd));
+    if (valueInputNameAdd.trim()) {
+      setValueInputEmailAdd(handleValidateEmail(valueInputNameAdd.trim()));
     } else {
       setValueInputEmailAdd("");
     }
@@ -61,9 +61,9 @@ const Main = (props) => {
   //Add Member
   const handleAddMember = () => {
     if (
-      valueInputEmailAdd !== "" &&
-      valueInputNameAdd !== "" &&
-      valueInputJobAdd !== "" 
+      valueInputEmailAdd.trim() !== "" &&
+      valueInputNameAdd.trim() !== "" &&
+      valueInputJobAdd.trim() !== "" 
     ) {
       listItem.unshift({
         id: uuidv4(),
@@ -77,7 +77,10 @@ const Main = (props) => {
       setValueInputNameAdd("");
       setIndexPage(0);
       setValueInputSearch('')
-    }}
+    }else{
+      alert('Nhập đủ thông tin vào')
+    }
+  }
 
   // Search Member
   const [valueInputSearch,setValueInputSearch]=useState('')
