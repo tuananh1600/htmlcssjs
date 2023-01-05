@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { sliceListItem, loc_xoa_dau,totalResult } from "./function";
+import { sliceListItem, loc_xoa_dau, totalResult } from "./function";
 import debounce from "lodash.debounce";
 const Main = (props) => {
   const [listItem, setListItem] = useState(props.data);
+  const [record, setRecord] = useState(40);
   const mailDomain = "@ntq-solution.com.vn";
-  const [listItemAllPage, setlistItemAllPage] = useState(sliceListItem(listItem,40));
+  const [listItemAllPage, setlistItemAllPage] = useState(
+    sliceListItem(listItem, record)
+  );
   const [valueInputNameAdd, setValueInputNameAdd] = useState("");
   const [valueInputJobAdd, setValueInputJobAdd] = useState("");
   const [valueInputEmailAdd, setValueInputEmailAdd] = useState("");
   const [indexPage, setIndexPage] = useState(0);
-
+  const [add, setAdd] = useState(false);
   const changeValueInputNameAdd = (e) => {
     setValueInputNameAdd(e.target.value);
   };
@@ -28,23 +31,31 @@ const Main = (props) => {
     }
   };
 
-
-
   // Xử Lý Mail
-  var regex = /\d+/    //Number in string
+  var regex = /\d+/; //Number in string
   const handleValidateEmail = (value) => {
-    let check = []
+    let check = [];
     let formatValue = loc_xoa_dau(value.toLowerCase()).split(" ");
     let countNumberMail = 0;
-    let userMail = formatValue.length === 1 ? `${formatValue[0]}` : `${formatValue[formatValue.length - 1]}.${formatValue[0]}`;
-      listItem.forEach((item)=>{
-        if(Number(item.email.toString().match(regex)) > 0 && item.email.toString() === `${userMail}${item.email.toString().match(regex)}${mailDomain}`){
-          check.push(Number(item.email.toString().match(regex)))
-          countNumberMail = Math.max.apply(null, check)+1
-        }else if(item.email.toString() === `${userMail}${mailDomain}` && countNumberMail === 0){
-          countNumberMail++
-        }
-      })
+    let userMail =
+      formatValue.length === 1
+        ? `${formatValue[0]}`
+        : `${formatValue[formatValue.length - 1]}.${formatValue[0]}`;
+    listItem.forEach((item) => {
+      if (
+        Number(item.email.toString().match(regex)) > 0 &&
+        item.email.toString() ===
+          `${userMail}${item.email.toString().match(regex)}${mailDomain}`
+      ) {
+        check.push(Number(item.email.toString().match(regex)));
+        countNumberMail = Math.max.apply(null, check) + 1;
+      } else if (
+        item.email.toString() === `${userMail}${mailDomain}` &&
+        countNumberMail === 0
+      ) {
+        countNumberMail++;
+      }
+    });
     if (countNumberMail === 0) {
       return userMail + mailDomain;
     }
@@ -63,51 +74,57 @@ const Main = (props) => {
     if (
       valueInputEmailAdd.trim() !== "" &&
       valueInputNameAdd.trim() !== "" &&
-      valueInputJobAdd.trim() !== "" 
+      valueInputJobAdd.trim() !== ""
     ) {
       listItem.unshift({
         id: uuidv4(),
-        name:valueInputNameAdd.trim(),
+        name: valueInputNameAdd.trim(),
         job: valueInputJobAdd.trim(),
         email: valueInputEmailAdd.trim(),
-      })
-      setlistItemAllPage(sliceListItem(listItem,40));
+      });
+      setlistItemAllPage(sliceListItem(listItem, record));
       setValueInputEmailAdd("");
       setValueInputJobAdd("");
       setValueInputNameAdd("");
       setIndexPage(0);
-      setValueInputSearch('')
-    }else{
-      alert('Nhập đủ thông tin vào')
+      setValueInputSearch("");
+      setAdd(!add);
+    } else {
+      alert("Nhập đủ thông tin vào");
     }
-  }
+  };
 
   // Search Member
-  const [valueInputSearch,setValueInputSearch]=useState('')
+  const [valueInputSearch, setValueInputSearch] = useState("");
   const [valueSelectSearch, setValueSelectSearch] = useState("name");
   const handleValueSelectSearch = (e) => {
     setValueSelectSearch(e.target.value);
-    searhMember(valueInputSearch,e.target.value)
+    searhMember(valueInputSearch, e.target.value);
   };
-  const searhMember = (value,searchType) => {
+  const searhMember = (value, searchType) => {
     const listItemAfterSearch = [];
-    const newValue = loc_xoa_dau(value)
+    const newValue = loc_xoa_dau(value);
     listItem.forEach((item) => {
       if (
-        loc_xoa_dau(item[searchType].toString().toUpperCase().trim()).includes(newValue.toUpperCase())
+        loc_xoa_dau(
+          item[searchType]
+            .toString()
+            .toUpperCase()
+            .trim()
+        ).includes(newValue.toUpperCase())
       ) {
         listItemAfterSearch.push(item);
       }
     });
     setIndexPage(0);
-    setlistItemAllPage(sliceListItem(listItemAfterSearch,40));
+    setlistItemAllPage(sliceListItem(listItemAfterSearch, record));
   };
 
   const handleSearchMember = (e) => {
-    searhMember(e.target.value.trim(),valueSelectSearch);
-    setValueInputSearch(e.target.value)
+    searhMember(e.target.value.trim(), valueSelectSearch);
+    setValueInputSearch(e.target.value);
   };
-  const debounceOnChange = debounce(handleSearchMember,300)
+  const debounceOnChange = debounce(handleSearchMember, 300);
 
   //Filer Sort
   const handleSortName = (event) => {
@@ -120,56 +137,84 @@ const Main = (props) => {
       let d = b.name.trim().split(" ");
       let e = !Number(c[c.length - 1]) ? c[c.length - 1] : c[c.length - 2];
       let f = !Number(d[d.length - 1]) ? d[d.length - 1] : d[d.length - 2];
-      return event.target.value === "increase" ? e.localeCompare(f) : f.localeCompare(e)
+      return event.target.value === "increase"
+        ? e.localeCompare(f)
+        : f.localeCompare(e);
     });
-    setlistItemAllPage(sliceListItem(listItemAllPageTemp,40));
-  }
-  
+    setlistItemAllPage(sliceListItem(listItemAllPageTemp, record));
+  };
+
+  //Record page
+  const handleReord = (e) => {
+    setRecord(e.target.value);
+    let listItemAllPageTemp = [];
+    listItemAllPage.forEach((item) => {
+      listItemAllPageTemp = listItemAllPageTemp.concat(item);
+    });
+    setlistItemAllPage(sliceListItem(listItemAllPageTemp, e.target.value));
+  };
+
   return (
     <div className="main">
       <div className="main__control">
-        <div className="control__title">
-          <div
-            style={{
-              maxWidth: "45%",
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <label style={{ fontSize: "1.4rem" }}>Name</label>
-            <input
-              onChange={changeValueInputNameAdd}
-              onBlur={handleOnBlurNameAdd}
-              value={valueInputNameAdd}
-            ></input>
+        {add ? (
+          <>
+            <div className="control__title">
+              <div
+                style={{
+                  maxWidth: "45%",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <label style={{ fontSize: "1.4rem" }}>Name</label>
+                <input
+                  onChange={changeValueInputNameAdd}
+                  onBlur={handleOnBlurNameAdd}
+                  value={valueInputNameAdd}
+                ></input>
+              </div>
+              <div
+                style={{
+                  maxWidth: "45%",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <label style={{ fontSize: "1.4rem" }}>Job</label>
+                <input
+                  onChange={changeValueInputJobAdd}
+                  value={valueInputJobAdd}
+                ></input>
+              </div>
+              <div
+                style={{
+                  maxWidth: "45%",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <label style={{ fontSize: "1.4rem" }}>Email</label>
+                <input value={valueInputEmailAdd}></input>
+              </div>
+            </div>
+            <button className="btnAddMember" onClick={handleAddMember} style={{cursor:"pointer"}}>
+              Add Member Here
+            </button>{" "}
+          </>
+        ) : (
+          <div>
+            <button
+              onClick={() => {
+                setAdd(!add);
+              }
+            }
+            style={{height:"50px",width:"200px",fontFamily:"cursive",cursor:"pointer"}}
+            >
+              Add
+            </button>
           </div>
-          <div
-            style={{
-              maxWidth: "45%",
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <label style={{ fontSize: "1.4rem" }}>Job</label>
-            <input
-              onChange={changeValueInputJobAdd}
-              value={valueInputJobAdd}
-            ></input>
-          </div>
-          <div
-            style={{
-              maxWidth: "45%",
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <label style={{ fontSize: "1.4rem" }}>Email</label>
-            <input value={valueInputEmailAdd}></input>
-          </div>
-        </div>
-        <button className="btnAddMember" onClick={handleAddMember}>
-          Add Member Here
-        </button>
+        )}
         <div className="control">
           <div className="control__search">
             <input
@@ -190,26 +235,36 @@ const Main = (props) => {
           <div className="control-select">
             <div className="control-select__filter">
               <select onChange={handleSortName}>
-                <option style={{display :"none"}}>Filter</option>
+                <option style={{ display: "none" }}>Filter</option>
                 <option value={"increase"}>Tên A - Z</option>
                 <option value={"decrease"}>Tên Z - A</option>
               </select>
             </div>
             <h3>{`Tổng kết quả : ${totalResult(listItemAllPage)}`}</h3>
+            <select onChange={handleReord}>
+              <option style={{ display: "none" }}>Records/1Page</option>
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={40}>40</option>
+            </select>
             <div className="control-select__pages">
               <div className="page-number">
-                <span className="page-number__value">{`Page ${indexPage +
-                  1}/${listItemAllPage.length}`}</span>
+                <span className="page-number__value">{`Page ${indexPage + 1}/${
+                  listItemAllPage.length
+                }`}</span>
                 <span className="btn-control">
                   <button
-                  onClick={handleBackPage} 
-                  disabled ={indexPage === 0 ? 'false' : '' }
-                   >
+                    onClick={handleBackPage}
+                    disabled={indexPage === 0 ? "false" : ""}
+                  >
                     <i className="fas fa-angle-left"></i>
                   </button>
-                  <button 
-                  onClick={handleNextPage}
-                  disabled={indexPage + 1 === listItemAllPage.length ? 'false' : ''}
+                  <button
+                    onClick={handleNextPage}
+                    disabled={
+                      indexPage + 1 === listItemAllPage.length ? "false" : ""
+                    }
                   >
                     <i className="fas fa-angle-right"></i>
                   </button>
@@ -229,12 +284,23 @@ const Main = (props) => {
       </div>
       <div className="main__content">
         <div className="content-employee__list">
-          {listItemAllPage.length !== 0 && listItemAllPage[indexPage].map((item) => {
+          {listItemAllPage.length !== 0 &&
+            listItemAllPage[indexPage].map((item) => {
               return (
                 <div className="content-employee__item" key={item.id}>
                   <div className="employ-item">
                     <div className="employee-img">
-                      <h1 style={{fontSize : "25px"}}>{item.email!==false ? item.email.toString().split('')[0].toUpperCase() : item.name.split(' ')[item.name.split(' ').length-1].split('')[0].toUpperCase()}</h1>
+                      <h1 style={{ fontSize: "25px" }}>
+                        {item.email !== false
+                          ? item.email
+                              .toString()
+                              .split("")[0]
+                              .toUpperCase()
+                          : item.name
+                              .split(" ")
+                              [item.name.split(" ").length - 1].split("")[0]
+                              .toUpperCase()}
+                      </h1>
                       <p className="employee-img__connect">
                         <i className="fas fa-comments"></i>15
                         <i className="fas fa-users"></i>23
