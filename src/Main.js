@@ -38,9 +38,7 @@ const Main = (props) => {
     let formatValue = loc_xoa_dau(value.toLowerCase()).split(" ");
     let countNumberMail = 0;
     let userMail =
-      formatValue.length === 1
-        ? `${formatValue[0]}`
-        : `${formatValue[formatValue.length - 1]}.${formatValue[0]}`;
+    formatValue.length === 1 ? `${formatValue[0]}` : `${formatValue[formatValue.length - 1]}.${formatValue[0]}`;
     listItem.forEach((item) => {
       if (
         Number(item.email.toString().match(regex)) > 0 &&
@@ -87,7 +85,6 @@ const Main = (props) => {
       setValueInputJobAdd("");
       setValueInputNameAdd("");
       setIndexPage(0);
-      setValueInputSearch("");
       setAdd(!add);
     } else {
       alert("Nhập đủ thông tin vào");
@@ -137,15 +134,14 @@ const Main = (props) => {
       let d = b.name.trim().split(" ");
       let e = !Number(c[c.length - 1]) ? c[c.length - 1] : c[c.length - 2];
       let f = !Number(d[d.length - 1]) ? d[d.length - 1] : d[d.length - 2];
-      return event.target.value === "increase"
-        ? e.localeCompare(f)
-        : f.localeCompare(e);
+      return event.target.value === "increase" ? e.localeCompare(f) : f.localeCompare(e);
     });
     setlistItemAllPage(sliceListItem(listItemAllPageTemp, record));
   };
 
   //Record page
   const handleReord = (e) => {
+    setIndexPage(0)
     setRecord(e.target.value);
     let listItemAllPageTemp = [];
     listItemAllPage.forEach((item) => {
